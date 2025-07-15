@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ELOAbroad - AI-Powered Visa Packages & Pricing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .feature-list li {
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10B981; /* Tailwind green-500 */
+            font-weight: bold;
+        }
+        /* AI Section Styles */
+        .ai-matcher-bg {
+            background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+        }
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="gradient-bg text-gray-800">
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-gray-900">
+                <a href="#">ELOAbroad</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#ai-matcher" class="text-gray-600 hover:text-blue-600 transition">✨ AI Matcher</a>
+                <a href="#packages" class="text-gray-600 hover:text-blue-600 transition">Packages</a>
+                <a href="#contact" class="text-gray-600 hover:text-blue-600 transition">Contact</a>
+                <a href="https://job.eloabroad.com" target="_blank" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition shadow">Job Portal</a>
+            </div>
+            <div class="md:hidden">
+                <button id="mobile-menu-button" class="text-gray-800 focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden">
+            <a href="#ai-matcher" class="block py-2 px-4 text-sm hover:bg-gray-200">✨ AI Matcher</a>
+            <a href="#packages" class="block py-2 px-4 text-sm hover:bg-gray-200">Packages</a>
+            <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Contact</a>
+            <a href="https://job.eloabroad.com" target="_blank" class="block py-2 px-4 text-sm hover:bg-gray-200">Job Portal</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12">
+
+        <!-- Hero Section -->
+        <section class="text-center mb-16">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">Your Global Journey Starts Here</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Transparent, comprehensive visa packages designed to make your dream of working abroad a reality. We handle the complexity, so you can focus on your future.</p>
+        </section>
+
+        <!-- AI Destination Matcher Section -->
+        <section id="ai-matcher" class="mb-16">
+            <div class="rounded-xl shadow-xl overflow-hidden p-8 md:p-12 ai-matcher-bg text-white">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-4">Unsure Where to Go?</h2>
+                <p class="text-center max-w-2xl mx-auto mb-8">Describe your ideal work destination. Mention your profession, desired lifestyle (e.g., city life, quiet nature), and any other preferences. Our AI will suggest the perfect country for you!</p>
+                
+                <div class="max-w-2xl mx-auto">
+                    <textarea id="ai-prompt-input" class="w-full h-28 p-4 rounded-lg border-2 border-transparent focus:border-white focus:ring-0 transition text-gray-800" placeholder="e.g., I'm a software developer looking for a country with a strong tech scene, good work-life balance, and beautiful nature..."></textarea>
+                    <button id="ai-submit-button" class="mt-4 w-full bg-white text-blue-600 font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-200 transition-transform transform hover:scale-105">
+                        ✨ Find My Perfect Destination
+                    </button>
+                </div>
+                
+                <!-- AI Result Area -->
+                <div id="ai-result-area" class="mt-8 max-w-3xl mx-auto text-center hidden">
+                    <div id="ai-loader" class="loader hidden"></div>
+                    <div id="ai-recommendation" class="bg-white/20 p-6 rounded-lg backdrop-blur-sm">
+                        <!-- Recommendation will be inserted here -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Packages Section -->
+        <section id="packages">
+            <h2 class="text-3xl font-bold text-center mb-10 text-gray-900">Choose Your Destination</h2>
+            
+            <div id="packages-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Pricing cards will be inserted here dynamically -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-white mt-16">
+        <div class="container mx-auto px-6 py-10">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-left">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">ELOAbroad</h3>
+                    <p class="text-gray-400">Your trusted partner in global relocation and career advancement. We are committed to your success.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="https://www.eloabroad.com" target="_blank" class="text-gray-400 hover:text-white">Main Website</a></li>
+                        <li><a href="https://job.eloabroad.com" target="_blank" class="text-gray-400 hover:text-white">Job Portal</a></li>
+                        <li><a href="#packages" class="text-gray-400 hover:text-white">Our Packages</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contact Us</h3>
+                    <p class="text-gray-400">Have questions? Reach out to our team.</p>
+                    <a href="mailto:admin@eloabroad.com" class="text-blue-400 hover:text-blue-300 transition-colors mt-2 inline-block">admin@eloabroad.com</a>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-500">
+                <p>&copy; 2024 ELOAbroad. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Data for all country packages
+        const countries = [
+            // Europe
+            { name: 'Norway', id: 'norway', code: 'no', price: 2000, installments: [{ amount: 600, detail: 'Offer Letter & Work Permit Application' }, { amount: 600, detail: 'Work Permit Release & Embassy Docs' }, { amount: 800, detail: 'Embassy Appointment & Visa Stamping' }], features: ['Personalized Document Checklist', 'Application Form Assistance', 'Dedicated Case Officer'] },
+            { name: 'Germany', id: 'germany', code: 'de', price: 2500, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit Application' }, { amount: 800, detail: 'Complete Visa File & Embassy Docs' }, { amount: 900, detail: 'Embassy Appointment & Visa Support' }], features: ['Blocked Account Guidance', 'University/Job Search Assistance', 'Accommodation Support'] },
+            { name: 'United Kingdom', id: 'united-kingdom', code: 'gb', price: 2700, installments: [{ amount: 1000, detail: 'Offer Letter & Contract Review' }, { amount: 1000, detail: 'Visa File Prep & Embassy Docs' }, { amount: 700, detail: 'Embassy Appointment & Visa Support' }], popular: true, features: ['IHS Surcharge Guidance', 'Biometric Appointment Booking', 'Mock Interview Preparation'] },
+            { name: 'Ireland', id: 'ireland', code: 'ie', price: 2200, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 600, detail: 'Embassy Appointment & Visa' }], features: ['Critical Skills Eligibility Check', 'Financial Document Review', 'Post-arrival Support'] },
+            { name: 'France', id: 'france', code: 'fr', price: 2300, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 700, detail: 'Embassy Appointment & Visa' }], features: ['Campus France Procedure Help', 'CV & Cover Letter Review (French)', 'OFII Procedure Guidance'] },
+            { name: 'Belgium', id: 'belgium', code: 'be', price: 2200, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 600, detail: 'Embassy Appointment & Visa' }], features: ['Single Permit Application', 'Document Legalization Assistance', 'Relocation Advice'] },
+            { name: 'Luxembourg', id: 'luxembourg', code: 'lu', price: 2400, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 800, detail: 'Embassy Appointment & Visa' }], features: ['Highest Minimum Wage in EU', 'Temporary Authorization to Stay', 'Family Reunification Guidance'] },
+            { name: 'Netherlands', id: 'netherlands', code: 'nl', price: 2400, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 800, detail: 'Embassy Appointment & Visa' }], features: ['Highly Skilled Migrant Program', 'IND Application Support', '30% Ruling Information'] },
+            { name: 'Sweden', id: 'sweden', code: 'se', price: 2200, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 600, detail: 'Embassy Appointment & Visa' }], features: ['Migrationsverket Application', 'Coordination Number Help', 'Union Statement Guidance'] },
+            { name: 'Denmark', id: 'denmark', code: 'dk', price: 2300, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 700, detail: 'Embassy Appointment & Visa' }], features: ['Positive List Scheme Guidance', 'SIRI Application Support', 'CPR Number Registration Info'] },
+            { name: 'Finland', id: 'finland', code: 'fi', price: 2200, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 600, detail: 'Embassy Appointment & Visa' }], features: ['Enter Finland Portal Help', 'Residence Permit Application', 'Digital and Population Data Services Agency Info'] },
+            { name: 'Austria', id: 'austria', code: 'at', price: 2200, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 600, detail: 'Embassy Appointment & Visa' }], features: ['Red-White-Red Card Application', 'Points System Calculation', 'AMS Confirmation Support'] },
+            { name: 'Portugal', id: 'portugal', code: 'pt', price: 2100, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 500, detail: 'Embassy Appointment & Visa' }], features: ['NIF Number Assistance', 'SEF Appointment Booking', 'Golden Visa Information'] },
+            { name: 'Spain', id: 'spain', code: 'es', price: 2100, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 500, detail: 'Embassy Appointment & Visa' }], features: ['NIE Application Support', 'Empadronamiento Guidance', 'Social Security Registration'] },
+            { name: 'Italy', id: 'italy', code: 'it', price: 2100, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 500, detail: 'Embassy Appointment & Visa' }], features: ['Nulla Osta Application', 'Codice Fiscale Assistance', 'Permesso di Soggiorno Help'] },
+            { name: 'Poland', id: 'poland', code: 'pl', price: 1800, installments: [{ amount: 600, detail: 'Offer Letter & Work Permit' }, { amount: 600, detail: 'Release Work Permit & Embassy Docs' }, { amount: 600, detail: 'Embassy Appointment & Visa' }], features: ['Zezwolenie na pracę typ A', 'Voivodeship Office Coordination', 'PESEL Number Guidance'] },
+            { name: 'Czech Republic', id: 'czech-republic', code: 'cz', price: 1900, installments: [{ amount: 600, detail: 'Offer Letter & Work Permit' }, { amount: 600, detail: 'Release Work Permit & Embassy Docs' }, { amount: 700, detail: 'Embassy Appointment & Visa' }], features: ['Employee Card Application', 'Ministry of Interior Support', 'Foreign Police Registration'] },
+            { name: 'Hungary', id: 'hungary', code: 'hu', price: 1900, installments: [{ amount: 600, detail: 'Offer Letter & Work Permit' }, { amount: 600, detail: 'Release Work Permit & Embassy Docs' }, { amount: 700, detail: 'Embassy Appointment & Visa' }], features: ['Residence Permit for Employment', 'National Directorate-General for Aliens Policing Help', 'Accommodation Reporting'] },
+            { name: 'Lithuania', id: 'lithuania', code: 'lt', price: 1800, installments: [{ amount: 600, detail: 'Offer Letter & Work Permit' }, { amount: 600, detail: 'Release Work Permit & Embassy Docs' }, { amount: 600, detail: 'Embassy Appointment & Visa' }], features: ['National D-Type Visa', 'Migration Department (MIGRIS) Support', 'Temporary Residence Permit'] },
+            { name: 'Latvia', id: 'latvia', code: 'lv', price: 1800, installments: [{ amount: 600, detail: 'Offer Letter & Work Permit' }, { amount: 600, detail: 'Release Work Permit & Embassy Docs' }, { amount: 600, detail: 'Embassy Appointment & Visa' }], features: ['Residence Permit with Work Rights', 'OCMA Application Guidance', 'Invitation Letter Approval'] },
+            { name: 'Estonia', id: 'estonia', code: 'ee', price: 1800, installments: [{ amount: 600, detail: 'Offer Letter & Work Permit' }, { amount: 600, detail: 'Release Work Permit & Embassy Docs' }, { amount: 600, detail: 'Embassy Appointment & Visa' }], features: ['D-visa for Short-term Employment', 'Police and Border Guard Board Help', 'e-Residency Information'] },
+            { name: 'Slovakia', id: 'slovakia', code: 'sk', price: 1900, installments: [{ amount: 600, detail: 'Offer Letter & Work Permit' }, { amount: 600, detail: 'Release Work Permit & Embassy Docs' }, { amount: 700, detail: 'Embassy Appointment & Visa' }], features: ['Temporary Residence for Employment', 'Foreign Police Department Support', 'Medical Check Guidance'] },
+            { name: 'Croatia', id: 'croatia', code: 'hr', price: 1900, installments: [{ amount: 600, detail: 'Offer Letter & Work Permit' }, { amount: 600, detail: 'Release Work Permit & Embassy Docs' }, { amount: 700, detail: 'Embassy Appointment & Visa' }], features: ['Work and Stay Permit Application', 'Ministry of Interior (MUP) Help', 'OIB Number Registration'] },
+            
+            // Americas
+            { name: 'Canada', id: 'canada', code: 'ca', price: 3000, installments: [{ amount: 1000, detail: 'Offer Letter & LMIA/Contract Support' }, { amount: 1000, detail: 'Complete Visa File & Biometrics' }, { amount: 1000, detail: 'Embassy Appointment & Final Visa' }], popular: true, features: ['Express Entry Profile Creation', 'Provincial Nominee Program (PNP) Advice', 'Post-Graduation Work Permit (PGWP) Help'] },
+            { name: 'United States', id: 'united-states', code: 'us', price: 3000, installments: [{ amount: 1000, detail: 'Offer Letter & Contract' }, { amount: 1000, detail: 'Visa File & Embassy Docs' }, { amount: 1000, detail: 'Embassy Appointment & Visa' }], popular: true, features: ['H-1B / L-1 / O-1 Visa Specialization', 'DS-160 Form Assistance', 'USCIS Petition Filing Support'] },
+
+            // Oceania
+            { name: 'Australia', id: 'australia', code: 'au', price: 2800, installments: [{ amount: 1000, detail: 'Offer Letter & Contract' }, { amount: 1000, detail: 'Visa File & Embassy Docs' }, { amount: 800, detail: 'Embassy Appointment & Visa Grant' }], popular: true, features: ['TSS (482) / Skilled (189/190) Visa', 'Skills Assessment Guidance', 'ImmiAccount Management'] },
+            { name: 'New Zealand', id: 'new-zealand', code: 'nz', price: 2800, installments: [{ amount: 1000, detail: 'Offer Letter & Contract' }, { amount: 1000, detail: 'Visa File & Embassy Docs' }, { amount: 800, detail: 'Embassy Appointment & Visa Grant' }], features: ['Accredited Employer Work Visa (AEWV)', 'Expression of Interest (EOI) Support', 'INZ Application Lodgement'] },
+
+            // Asia
+            { name: 'Japan', id: 'japan', code: 'jp', price: 2500, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 900, detail: 'Embassy Appointment & Visa' }], features: ['Certificate of Eligibility (CoE)', 'Specified Skilled Worker Program', 'Residence Card Application'] },
+            { name: 'South Korea', id: 'south-korea', code: 'kr', price: 2500, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 900, detail: 'Embassy Appointment & Visa' }], features: ['E-7 (Specific Activities) Visa', 'Alien Registration Card (ARC) Help', 'Immigration Office Support'] },
+            { name: 'China', id: 'china', code: 'cn', price: 2400, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 800, detail: 'Embassy Appointment & Visa' }], features: ['Z-Visa Application', 'Work Permit Notification Letter', 'Residence Permit Post-Arrival'] },
+            { name: 'Thailand', id: 'thailand', code: 'th', price: 2100, installments: [{ amount: 800, detail: 'Offer Letter & Work Permit' }, { amount: 800, detail: 'Visa File & Embassy Docs' }, { amount: 500, detail: 'Embassy Appointment & Visa' }], features: ['Non-Immigrant B Visa', 'Digital Work Permit (BOI)', '90-Day Reporting Assistance'] },
+            { name: 'Vietnam', id: 'vietnam', code: 'vn', price: 2000, installments: [{ amount: 600, detail: 'Offer Letter & Work Permit' }, { amount: 600, detail: 'Release Work Permit & Embassy Docs' }, { amount: 800, detail: 'Embassy Appointment & Visa' }], features: ['Work Permit Exemption Guidance', 'Temporary Residence Card (TRC)', 'Visa on Arrival Letter'] },
+        ];
+
+        const packagesGrid = document.getElementById('packages-grid');
+
+        // Function to render all country cards
+        function renderCountryCards() {
+            packagesGrid.innerHTML = ''; // Clear existing cards
+            countries.forEach(country => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-lg overflow-hidden card-hover';
+                card.id = `country-${country.id}`; // Add an ID for scrolling
+                if (country.popular) {
+                    card.classList.add('border-4', 'border-yellow-400', 'relative');
+                }
+
+                const installmentsHtml = country.installments.map(inst => 
+                    `<li class="flex items-start"><span class="text-green-500 mr-2 mt-1">&#10003;</span> <strong>Installment: $${inst.amount}</strong> - ${inst.detail}</li>`
+                ).join('');
+
+                const featuresHtml = country.features.map(feat => `<li>${feat}</li>`).join('');
+
+                card.innerHTML = `
+                    ${country.popular ? '<div class="absolute top-0 right-0 bg-yellow-400 text-black font-bold py-1 px-4 rounded-bl-lg">Popular</div>' : ''}
+                    <div class="p-8">
+                        <div class="flex items-center mb-4">
+                            <img src="https://flagcdn.com/w40/${country.code}.png" alt="${country.name} Flag" class="w-10 h-auto mr-4" onerror="this.style.display='none'">
+                            <h3 class="text-2xl font-bold text-gray-900">${country.name}</h3>
+                        </div>
+                        <p class="text-4xl font-extrabold text-blue-600 mb-2">$${country.price} <span class="text-lg font-medium text-gray-500">USD</span></p>
+                        <p class="text-sm text-gray-500 mb-4">Total Package Price</p>
+                        
+                        <div class="mb-6 border-t pt-4">
+                            <h4 class="font-semibold text-gray-700 mb-3">Core Services & Installments:</h4>
+                            <ul class="space-y-2 text-gray-600 text-sm mb-6">${installmentsHtml}</ul>
+                            <h4 class="font-semibold text-gray-700 mb-3">Package Highlights:</h4>
+                            <ul class="space-y-2 text-gray-600 text-sm feature-list">${featuresHtml}</ul>
+                        </div>
+                        <a href="https://www.eloabroad.com" target="_blank" class="block w-full text-center ${country.popular ? 'bg-yellow-400 text-black hover:bg-yellow-500' : 'bg-blue-600 text-white hover:bg-blue-700'} py-3 rounded-lg font-semibold transition-all">
+                            Start My Application
+                        </a>
+                    </div>
+                `;
+                packagesGrid.appendChild(card);
+            });
+        }
+
+        // --- AI Matcher Logic ---
+        const aiSubmitButton = document.getElementById('ai-submit-button');
+        const aiPromptInput = document.getElementById('ai-prompt-input');
+        const aiResultArea = document.getElementById('ai-result-area');
+        const aiLoader = document.getElementById('ai-loader');
+        const aiRecommendation = document.getElementById('ai-recommendation');
+
+        aiSubmitButton.addEventListener('click', async () => {
+            const userInput = aiPromptInput.value;
+            if (!userInput.trim()) {
+                aiRecommendation.innerHTML = `<p class="font-semibold">Please tell us about your preferences first!</p>`;
+                aiResultArea.classList.remove('hidden');
+                return;
+            }
+
+            // Show loader and hide previous results
+            aiLoader.classList.remove('hidden');
+            aiRecommendation.classList.add('hidden');
+            aiResultArea.classList.remove('hidden');
+
+            // Prepare data for the AI
+            const countryDataForAI = countries.map(c => `${c.name}: ${c.features.join(', ')}`).join('\n');
+            const prompt = `
+                You are an expert immigration consultant for a company called ELOAbroad.
+                Based on the user's preferences and the following list of countries and their features, recommend the single best country for the user.
+                
+                User preferences: "${userInput}"
+
+                Available countries and their features:
+                ${countryDataForAI}
+
+                Your response must be in two parts separated by "|||".
+                Part 1: The exact name of the recommended country.
+                Part 2: A brief, friendly, and encouraging explanation (2-3 sentences) for why you recommended that country based on the user's input.
+                
+                Example response: Germany|||Based on your background in engineering and desire for a strong economy with great work-life balance, Germany is an excellent match! Its world-class industries and high standard of living align perfectly with your goals.
+            `;
+
+            try {
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // API key will be provided by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                let text = '';
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    text = result.candidates[0].content.parts[0].text;
+                } else {
+                    throw new Error("Invalid response structure from API.");
+                }
+
+                const [countryName, explanation] = text.split('|||').map(s => s.trim());
+                
+                const recommendedCountry = countries.find(c => c.name.toLowerCase() === countryName.toLowerCase());
+
+                if (recommendedCountry) {
+                    aiRecommendation.innerHTML = `
+                        <h3 class="text-2xl font-bold mb-2">Our AI Recommends: ${recommendedCountry.name}!</h3>
+                        <p class="mb-4">${explanation}</p>
+                        <a href="#country-${recommendedCountry.id}" onclick="highlightAndScroll('${recommendedCountry.id}')" class="inline-block bg-white text-blue-600 font-bold py-2 px-5 rounded-lg shadow-md hover:bg-gray-200 transition">View Package Details</a>
+                    `;
+                } else {
+                     aiRecommendation.innerHTML = `<p class="font-semibold">We couldn't pinpoint an exact match, but please browse our popular packages for Canada, the UK, and Australia below!</p>`;
+                }
+
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                aiRecommendation.innerHTML = `<p class="font-semibold">Sorry, we couldn't process your request at the moment. Please try again later.</p>`;
+            } finally {
+                aiLoader.classList.add('hidden');
+                aiRecommendation.classList.remove('hidden');
+            }
+        });
+
+        function highlightAndScroll(countryId) {
+            const element = document.getElementById(`country-${countryId}`);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Add a temporary highlight effect
+                element.style.transition = 'all 0.3s ease-in-out';
+                element.style.boxShadow = '0 0 0 4px rgba(59, 130, 246, 0.7)'; // blue-500
+                setTimeout(() => {
+                    element.style.boxShadow = '';
+                }, 2500);
+            }
+        }
+
+        // --- Initial Page Render ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCountryCards();
+            
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        });
+
+    </script>
+</body>
+</html>
